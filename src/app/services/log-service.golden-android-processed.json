@@ -1,0 +1,75 @@
+[
+    {
+        "id": 1,
+        "eventId": "network_request_7046a898-ad64-4e3c-bb51-2c321bd2cdaf",
+        "type": "sdk_mad",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:14.559Z",
+        "gmaParams": {}
+    },
+    {
+        "id": 2,
+        "eventId": "network_request_75b9649c-f37c-4c2c-afe5-076f3ceb3869",
+        "type": "sdk_mad",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:14.837Z",
+        "gmaParams": {}
+    },
+    {
+        "id": 3,
+        "eventId": "network_request_2349fa9a-a363-4b17-9f5e-622c21fc2055",
+        "type": "sdk_init",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:14.926Z",
+        "gmaParams": {}
+    },
+    {
+        "id": 4,
+        "eventId": "network_request_8cea4391-d976-4da0-b49f-dc4b39203c17",
+        "type": "sdk_mad",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:14.934Z",
+        "gmaParams": {}
+    },
+    {
+        "id": 5,
+        "eventId": "network_request_111d3c84-83a6-4fda-b1b5-833ffda029ad",
+        "type": "sdk_mad",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:14.987Z",
+        "gmaParams": {}
+    },
+    {
+        "id": 6,
+        "eventId": "network_request_4745e903-05f5-4002-8996-6ab6e9a15965",
+        "type": "sdk_mad",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:14.991Z",
+        "gmaParams": {}
+    },
+    {
+        "id": 7,
+        "eventId": "network_request_ed812894-adde-46a7-8705-7a4eaf6bcccf",
+        "type": "ad_request",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:15.353Z",
+        "gmaParams": {
+            "request_url": "https://pubads.g.doubleclick.net/gampad/ads?submodel=Pixel&iu=/21775744923/example/adaptive-banner&sz=411x64&format=411x64_as&slotname=undefined&cust_params=excl_cat",
+            "iu": "/21775744923/example/adaptive-banner",
+            "sz": "411x64",
+            "format": "411x64_as",
+            "slotname": "undefined",
+            "cust_params": [ "excl_cat" ]
+        }
+    },
+    {
+        "id": 8,
+        "eventId": "network_request_ed812894-adde-46a7-8705-7a4eaf6bcccf",
+        "type": "ad_response",
+        "timestamp": 0,
+        "absoluteTime": "2025-12-18T10:28:15.480Z",
+        "gmaParams": {
+            "debugDialog": []
+        }
+    }
+]

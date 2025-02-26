@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+dist/
+.vscode
+testData/
+.prettierrc
+appsight_*
+.angular/cache
+./server/dist
+__pycache__/
+*.py[cod]
