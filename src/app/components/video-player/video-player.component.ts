@@ -104,8 +104,12 @@ export class VideoPlayerComponent implements OnInit {
     const lines = ocrResult.split("\n");
     for (const line of lines) {
       if (line.startsWith("Started ")) {
-        const tentativeTimestamp = line.replace("Started ", "");
+        let tentativeTimestamp = line.replace("Started ", "");
+        console.log("tentativeTimestamp: ", tentativeTimestamp);
+        tentativeTimestamp = tentativeTimestamp.split("+")[0].split("-")[0];
+        console.log("tentativeTimestamp: ", tentativeTimestamp);
         const timestamp = new Date(tentativeTimestamp);
+        console.log("timestamp: ", timestamp);
         return timestamp;
       }
     }

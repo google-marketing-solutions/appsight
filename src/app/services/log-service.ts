@@ -259,7 +259,12 @@ export class LogService {
     let logTimestamp: string | undefined = undefined;
     for (const gmaLogLine of lines) {
       const ENVIRONMENT = gmaLogLine.match(/^default/) == null ? Environment.ANDROID : Environment.IOS;
-      const gmaLogStatus = /GMA Debug ([^(\s|:)]+)/.exec(gmaLogLine)?.[1];
+      let gmaLogStatus = /GMA Debug ([^(\s|:)]+)/.exec(gmaLogLine)?.[1];
+      const continuedLogPattern = /^\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [VDIWEF]\/Ads-cont\(\d+\): (.+)$/;
+      const continuedLogMatch = gmaLogLine.match(continuedLogPattern);
+      if(!gmaLogStatus && gmaLogLine.match(continuedLogPattern)){
+        gmaLogStatus = "CONTENT";
+      }
       switch (gmaLogStatus) {
         case "BEGIN":
           currentNetworkTrace = "";
@@ -267,8 +272,12 @@ export class LogService {
           break;
         case "CONTENT":
           const gmaLogContent = /GMA Debug ([^\s]+) (.+)/.exec(gmaLogLine);
-          if (!gmaLogContent) throw new Error();
-          currentNetworkTrace += gmaLogContent[2];
+          if(gmaLogContent){
+            currentNetworkTrace += gmaLogContent[2];
+          }
+          else if (continuedLogMatch) {
+            currentNetworkTrace += continuedLogMatch[1].trim();
+          }
           break;
         case "FINISH":
           if (this.parseNetworkTrace(currentNetworkTrace, logTimestamp, id, ENVIRONMENT, referenceStartTime)) {
