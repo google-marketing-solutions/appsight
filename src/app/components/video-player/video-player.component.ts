@@ -48,7 +48,7 @@ export interface VideoLoadedEvent {
 export class VideoPlayerComponent implements OnInit {
   @ViewChild("video") videoRef: ElementRef<HTMLVideoElement> = {} as ElementRef;
 
-  VIDEO_S_START = 0.3;
+  VIDEO_S_START = 0.1;
 
   constructor(
     private uploadService: UploadService,
