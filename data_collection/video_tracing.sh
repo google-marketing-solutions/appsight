@@ -39,13 +39,16 @@ timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 mkdir "appsight_$timestamp"
 echo "Directory created for output: appsight_$timestamp"
 
+# Enable network tracing for next-gen sdk
+adb shell setprop log.tag.GoogleMobileAdsNetwork VERBOSE
+
 # Capture screen in its own process (setsid) so we can send Control+C to end nicely
 adb shell screenrecord --bugreport /data/local/tmp/screenrecord.mp4 &
 recordPid=$!
 
 # Clear and Capture network tracing
 adb logcat -c
-adb logcat '*:S' Ads:I Ads-cont:I > "appsight_$timestamp/adsLogs.txt" &
+adb logcat '*:S' Ads:I Ads-cont:I GoogleMobileAdsNetwork:V > "appsight_$timestamp/adsLogs.txt" &
 logcatPid=$!
 
 # Prompt user for when they are done

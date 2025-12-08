@@ -257,14 +257,20 @@ export class LogService {
     const lines = rawLogs.split("\n");
     let currentNetworkTrace = "";
     let logTimestamp: string | undefined = undefined;
+    // Since there is no Ads-cont log in next-gen sdk, checking if the CONTENT log was continued manually
+    let previousLogStatus: string | undefined  = "";
+
     for (const gmaLogLine of lines) {
       const ENVIRONMENT = gmaLogLine.match(/^default/) == null ? Environment.ANDROID : Environment.IOS;
       let gmaLogStatus = /GMA Debug ([^(\s|:)]+)/.exec(gmaLogLine)?.[1];
       const continuedLogPattern = /^\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} [VDIWEF]\/Ads-cont\(\d+\): (.+)$/;
       const continuedLogMatch = gmaLogLine.match(continuedLogPattern);
-      if(!gmaLogStatus && gmaLogLine.match(continuedLogPattern)){
+
+      if (!gmaLogStatus && (gmaLogLine.match(continuedLogPattern) || previousLogStatus === "CONTENT")){
         gmaLogStatus = "CONTENT";
       }
+      previousLogStatus = gmaLogStatus;
+
       switch (gmaLogStatus) {
         case "BEGIN":
           currentNetworkTrace = "";
@@ -272,11 +278,17 @@ export class LogService {
           break;
         case "CONTENT":
           const gmaLogContent = /GMA Debug ([^\s]+) (.+)/.exec(gmaLogLine);
-          if(gmaLogContent){
+          const nextGenLogContentContinued = /GoogleMobileAdsNetwork\: GMA\(Load\) \d+: (.+)/.exec(gmaLogLine);
+
+          if (gmaLogContent) {
             currentNetworkTrace += gmaLogContent[2];
           }
           else if (continuedLogMatch) {
             currentNetworkTrace += continuedLogMatch[1].trim();
+          }
+          // For next-gen sdk continued logs
+          else if (previousLogStatus === "CONTENT" && nextGenLogContentContinued) {
+            currentNetworkTrace += nextGenLogContentContinued[1].trim();
           }
           break;
         case "FINISH":
