@@ -21,7 +21,7 @@ import { Injectable } from '@angular/core';
 /**
  * Service to broadcast selection of a log event
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EventSelectionService {
   private selectedEventObservable = new BehaviorSubject<LogEvent | undefined>(
     undefined

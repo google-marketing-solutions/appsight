@@ -15,19 +15,75 @@
 -->
 
 <p-toast position="bottom-right"></p-toast>
-<div class="left-pan">
-  <app-video-player></app-video-player>
-</div>
-<div class="right-pan">
-  <div class="top-right-container">
-    <app-timeline></app-timeline>
-  </div>
-  <div class="bottom-right-container">
-    <div class="bottom-right-container-left-pan">
-      <app-event-details></app-event-details>
+<p-toast position="bottom-right" key="gcs-download-toast">
+  <ng-template let-message pTemplate="message">
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <i class="pi pi-cloud-download" style="font-size: 1.5rem"></i>
+        <div style="font-weight: 600">{{ message.summary }}</div>
+      </div>
+      <div style="font-size: 0.85rem; color: #666;">
+        Downloading: {{ downloadFileName$ | async }}
+      </div>
+      <p-progressbar [value]="downloadProgress$ | async" [showValue]="true" [style]="{ height: '12px', 'font-size': '10px' }"></p-progressbar>
     </div>
-    <div class="bottom-right-container-right-pan">
-      <app-session-metrics></app-session-metrics>
+  </ng-template>
+</p-toast>
+<div class="loader-container" *ngIf="isLoading$ | async">
+  <p-progressbar mode="indeterminate" [style]="{ height: '4px' }"></p-progressbar>
+</div>
+
+<header class="app-header">
+  <div class="header-left">
+    <h1 class="app-title">Appsight</h1>
+  </div>
+  <div class="header-right">
+    <div *ngIf="userProfile$ | async as profile; else loginPrompt" class="user-info-container" (click)="menu.toggle($event)">
+      <span class="user-name">{{ profile.name }}</span>
+      <p-avatar
+        [image]="profile.picture"
+        shape="circle"
+        size="normal"
+        class="cursor-pointer">
+      </p-avatar>
+    </div>
+    <ng-template #loginPrompt>
+      <div class="login-container">
+        <button
+          pButton
+          label="Sign in"
+          icon="pi pi-google"
+          class="p-button-text p-button-sm login-button"
+          (click)="login()">
+        </button>
+        <p-avatar
+          icon="pi pi-user"
+          shape="circle"
+          size="normal"
+          (click)="login()"
+          class="cursor-pointer">
+        </p-avatar>
+      </div>
+    </ng-template>
+    <p-menu #menu [model]="userMenuItems" [popup]="true"></p-menu>
+  </div>
+</header>
+
+<main class="main-content">
+  <div class="left-pan">
+    <app-video-player></app-video-player>
+  </div>
+  <div class="right-pan">
+    <div class="top-right-container">
+      <app-timeline></app-timeline>
+    </div>
+    <div class="bottom-right-container">
+      <div class="bottom-right-container-left-pan">
+        <app-event-details></app-event-details>
+      </div>
+      <div class="bottom-right-container-right-pan">
+        <app-session-metrics></app-session-metrics>
+      </div>
     </div>
   </div>
-</div>
+</main>

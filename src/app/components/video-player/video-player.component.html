@@ -17,16 +17,22 @@
 <div class="video-player-container">
   <video
     class="video-player"
-    ngModel
     #video
     id="video"
     controls
-    preload="metadata"
+    preload="auto"
     (loadedmetadata)="onVideoLoadedMetadata()"
   ></video>
 </div>
 <div class="upload-button-container">
   <p-button class="upload-button" (click)="onUploadClick()" size="small">
-    Upload files
+    Upload files from disk
   </p-button>
+  <p-button class="upload-button" (click)="onGcsUploadClick()" size="small" severity="secondary">
+    Load from GCS
+  </p-button>
+</div>
+<div *ngIf="currentGcsPath" class="gcs-path-label">
+  <i class="pi pi-cloud" style="margin-right: 5px"></i>
+  <span>Source: {{ currentGcsPath }}</span>
 </div>

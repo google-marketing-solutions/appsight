@@ -9,3 +9,4 @@ appsight_*
 ./server/dist
 __pycache__/
 *.py[cod]
+data_collection/

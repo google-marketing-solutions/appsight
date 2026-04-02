@@ -39,5 +39,19 @@
 .upload-button-container {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 10px;
+}
+
+.gcs-path-label {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #495057;
+    word-break: break-all;
+    display: flex;
+    align-items: center;
 }

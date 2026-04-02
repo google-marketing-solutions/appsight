@@ -20,15 +20,21 @@ import {
   provideZoneChangeDetection
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
+import { MessageService } from 'primeng/api';
 
 /** Application configuration. */
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideRouter([]),
     provideAnimationsAsync(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    importProvidersFrom(BrowserModule, BrowserAnimationsModule)
+    provideHttpClient(),
+    importProvidersFrom(BrowserModule, BrowserAnimationsModule),
+    MessageService
   ]
 };
