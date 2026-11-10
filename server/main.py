@@ -41,9 +41,10 @@ def get_gcs_client():
 
 
 def get_blob_or_error(gcs_path, filename):
-    """Retrieves a GCS blob or returns an error tuple."""
+    """Retrieves a GCS blob or returns an error response."""
     if not gcs_path or not gcs_path.startswith("gs://"):
-        return None, ("Invalid GCS path", 400)
+        return None, flask.Response(
+            "Invalid GCS path", 400, mimetype="text/plain")
     try:
         path_parts = gcs_path[5:].split("/", 1)
         bucket_name = path_parts[0]
@@ -61,12 +62,14 @@ def get_blob_or_error(gcs_path, filename):
                 blob = bucket.blob(f"{prefix}/logcat")
                 if blob.exists():
                     return blob, None
-            return None, (f"{filename} not found", 404)
+            return None, flask.Response(
+                "File not found", 404, mimetype="text/plain")
 
         return blob, None
     except Exception as e:  # pylint: disable=broad-exception-caught
         logger.exception("Error accessing GCS: %s", e)
-        return None, (f"Backend Error: {str(e)}", 500)
+        return None, flask.Response(
+            "Backend Error", 500, mimetype="text/plain")
 
 
 @app.route("/api/gcs/metadata")
@@ -122,7 +125,7 @@ def gcs_download():
         return flask.Response(generate(), mimetype=mimetype)
     except Exception as e:  # pylint: disable=broad-exception-caught
         logger.exception("Error downloading GCS blob: %s", e)
-        return f"Backend Error: {str(e)}", 500
+        return flask.Response("Backend Error", 500, mimetype="text/plain")
 
 
 @app.route("/<path:path>", methods=["GET"])
