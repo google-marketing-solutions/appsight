@@ -26,32 +26,67 @@ logger = logging.getLogger(__name__)
 
 app = flask.Flask(__name__)
 
-
-def get_gcs_client():
-    """Returns a GCS client using the user's token or default credentials."""
-    auth_header = flask.request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.split(" ")[1]
-        logger.info("Using provided user token for GCS authentication")
-        creds = credentials.Credentials(token)
-        return storage.Client(credentials=creds)
-
-    logger.info("Using Application Default Credentials")
-    return storage.Client()
+_ALLOWED_FILES = frozenset({"logcat.txt", "logcat", "video.mp4"})
 
 
-def get_blob_or_error(gcs_path, filename):
-    """Retrieves a GCS blob or returns an error response."""
+def get_gcs_client() -> storage.Client | None:
+    """Returns a GCS client using the caller's bearer token, or None.
+
+    The server must never fall back to its own Application Default Credentials
+    for user-facing GCS reads; doing so would let an unauthenticated caller read
+    any object the App Engine service account can reach.
+
+    Returns:
+        A storage.Client authenticated with the caller's bearer token, or None
+        if the Authorization header is missing or not a valid Bearer token.
+    """
+    auth_header = flask.request.headers.get("Authorization", "")
+    parts = auth_header.split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        logger.info(
+            "Missing or malformed Authorization Bearer header; rejecting GCS"
+            " request"
+        )
+        return None
+
+    _, token = parts
+    logger.info("Using provided user token for GCS authentication")
+    creds = credentials.Credentials(token)
+    return storage.Client(credentials=creds)
+
+
+def get_blob_or_error(
+    gcs_path: str | None, filename: str
+) -> tuple[storage.Blob | None, flask.Response | None]:
+    """Retrieves a GCS blob or returns an error response.
+
+    Args:
+        gcs_path: Target GCS URI starting with 'gs://', or None if the query
+            parameter was omitted (rejected with HTTP 400).
+        filename: Allowed file name to retrieve within the GCS path.
+
+    Returns:
+        A (blob, error_response) tuple: (blob, None) on success, or
+        (None, error_response) with an HTTP 400/401/404/500 response on failure.
+    """
     if not gcs_path or not gcs_path.startswith("gs://"):
         return None, flask.Response(
             "Invalid GCS path", 400, mimetype="text/plain")
-    try:
-        path_parts = gcs_path[5:].split("/", 1)
-        bucket_name = path_parts[0]
-        prefix = path_parts[1] if len(path_parts) > 1 else ""
-        prefix = prefix.strip("/")
+    if filename not in _ALLOWED_FILES:
+        return None, flask.Response(
+            "Invalid filename", 400, mimetype="text/plain")
 
+    bucket_name, _, raw_prefix = gcs_path.removeprefix("gs://").partition("/")
+    if not bucket_name:
+        return None, flask.Response(
+            "Invalid GCS path", 400, mimetype="text/plain")
+    prefix = raw_prefix.strip("/")
+
+    try:
         client = get_gcs_client()
+        if client is None:
+            return None, flask.Response(
+                "Authorization required", 401, mimetype="text/plain")
         bucket = client.bucket(bucket_name)
         blob_name = f"{prefix}/{filename}"
         blob = bucket.blob(blob_name)

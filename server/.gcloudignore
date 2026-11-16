@@ -15,5 +15,7 @@
 
 # Python pycache:
 __pycache__/
+# Unit tests:
+*_test.py
 # Ignored by the build system
 /setup.cfg
